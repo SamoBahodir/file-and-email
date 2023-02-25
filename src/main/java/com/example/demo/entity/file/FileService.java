@@ -1,4 +1,4 @@
-package com.example.demo.fileStorage;
+package com.example.demo.entity.file;
 
 import org.hashids.Hashids;
 import org.springframework.beans.factory.annotation.Value;
@@ -6,35 +6,34 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
 @Service
-public class FileStorageService {
-    private final FileStorageRepository fileStorageRepository;
+public class FileService {
+    private final FileRepository fileRepository;
     @Value("${upload.folder}")
     private String uploadFolder;
     private final Hashids hashids;
 
-    public FileStorageService(FileStorageRepository fileStorageRepository) {
-        this.fileStorageRepository = fileStorageRepository;
+    public FileService(FileRepository fileStorageRepository) {
+        this.fileRepository = fileStorageRepository;
         this.hashids=new Hashids(getClass().getName(),6);
     }
 
     @Transactional
     public void save(MultipartFile multipartFile) {
-        FileStorage fileStorage = new FileStorage();
+        File fileStorage = new File();
         fileStorage.setName(multipartFile.getOriginalFilename());
         fileStorage.setExtension(getExt(multipartFile.getOriginalFilename()));
         fileStorage.setContentType(multipartFile.getContentType());
         fileStorage.setSize(multipartFile.getSize());
-        fileStorage.setFileStorageStatus(FileStorageStatus.DRAFT);
-        fileStorageRepository.save(fileStorage);
-        fileStorageRepository.save(fileStorage);
+        fileStorage.setFileStorageStatus(FileStatus.DRAFT);
+        fileRepository.save(fileStorage);
+        fileRepository.save(fileStorage);
 
         Date now = new Date();
-        File uploadFolder = new File(String.format("%s/upload_folder/%d/%d/%d", this.uploadFolder,
+        java.io.File uploadFolder = new java.io.File(String.format("%s/upload_folder/%d/%d/%d", this.uploadFolder,
                 1900 + now.getTime(),
                 1 + now.getMonth(),
                 now.getTime()));
@@ -48,9 +47,9 @@ public class FileStorageService {
                 now.getTime(),
                 fileStorage.getHashId(),
                 fileStorage.getExtension()));
-        fileStorageRepository.save(fileStorage);
+        fileRepository.save(fileStorage);
         uploadFolder=uploadFolder.getAbsoluteFile();
-        File file=new File(uploadFolder,String.format("%s.%s",fileStorage.getHashId(),fileStorage.getExtension()));
+        java.io.File file=new java.io.File(uploadFolder,String.format("%s.%s",fileStorage.getHashId(),fileStorage.getExtension()));
         try {
             multipartFile.transferTo(file);
 

@@ -1,15 +1,13 @@
-package com.example.demo.fileStorage;
+package com.example.demo.entity.file;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-public class FileStorage {
+public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,7 +17,7 @@ public class FileStorage {
     private Long size;
     private String contentType;
     @Enumerated(EnumType.STRING)
-    private FileStorageStatus fileStorageStatus;
+    private FileStatus fileStorageStatus;
     private String uploadPath;
 
 
